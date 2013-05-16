@@ -51,17 +51,7 @@ defaults =
 defaultResources = [pattern: '/']
 defaultOrigins = ['*']
 
-# MSIE <7 doesn't support CORS
-# MSIE == 8 only allows origin '*' and does not allow withCredentials
-msiePattern = /MSIE/i
 operaPattern = /Opera/i
-
-isMSIE = (req) ->
-  agent = req.headers['user-agent'];
-  return no unless agent?
-  if agent.match(msiePattern) and not agent.match(operaPattern)
-  then yes
-  else no
 
 selectNotEmpty = (a, b) ->
   return a if a?.length
@@ -154,12 +144,7 @@ create = (config) ->
       # NOTE:
       # Since we can determine the origin programatically, there's no sense in ever
       # using '*', however, MSIE doesn't allow credentials or specific origins
-      if isMSIE(req)
-        res.setHeader('Access-Control-Allow-Origin', '*')
-      else
-        # Browsers never need '*', it doesn't provide any extra security
-        # plus, this makes it super easy to globally allow `withCredentials`
-        res.setHeader('Access-Control-Allow-Origin', origin)
+      res.setHeader('Access-Control-Allow-Origin', origin)
 
       if credentials? then res.setHeader('Access-Control-Allow-Credentials', "true")
 
